@@ -27,17 +27,9 @@ module.exports = function(io) {
 }
 
 function addToUsersArray(user) {
-	var userAlreadyExists = false;
-	for (var i = 0; i < users.length; i++)
-	{
-		if (user === users[i]){
-			userAlreadyExists = true;
-		}
-	}
-	if (userAlreadyExists === false)
-	{
-		users.push(user);
-	}
+    if (users.filter(i => i === user).length === 0) {
+        users.push(user);
+    }
 }
 
 function removeFromUsersArray(user) {

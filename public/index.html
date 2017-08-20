@@ -90,55 +90,49 @@
 			$('#message').focus();
 			
 			$("#btnConnect").on("click", function (event) {
-			    if ($("span#isConnected").text() === "Disconnected")
-                {
+			    if ($("span#isConnected").text() === "Disconnected") {
                     $('#displayname').val(prompt('Enter your name:', ''));
-					if ( !socket ) {
-						socket = io.connect();
-						socket.on('connect', function(){
-                            
-							$("span#isConnected").removeClass("label-default").addClass("label-success").text("Connected");
-							$("#btnConnect").removeClass("btn-primary").addClass("btn-danger").text("Disconnect");
-							socket.emit('addUser', { user: $('#displayname').val() });
-							$('#sendmessage').on("click", function (event) {
-								socket.emit('sendMessage', { user: $('#displayname').val(), message: $('#message').val() });
-								// Clear text box and reset focus for next comment. 
-								$('#message').val('').focus();
-							});
-							socket.on('newUserAddedMessage', function(data) {
-								
-								$('.alert').text(data.name + ' just signed on.').addClass('in');
-								setTimeout(function () {
-									$('.alert').removeClass('in');
-								}, 3000);
-							});
-							socket.on('userRemovedMessage', function(data) {
-								users.pop(data.name);
-								$('.alert').text(data.name + ' just signed out.').addClass('in');
-								setTimeout(function () {
-									$('.alert').removeClass('in');
-								}, 3000);
-							});
-							socket.on('usersInChat', function(data) {
-								users = data.users;
-								$("#currentUsers").html('Current users logged in: ');
-								$.each(users, function (index, item) {
-									$("#currentUsers").append('<span class="label label-default inline">' + item + '</span>&nbsp;');
-								});
-							});
-							socket.on('chat', function(data) {
-								var encodedName = $('<div />').text(data.user).html();
-								var encodedMsg = $('<div />').text(data.message).html();
-								// Add the message to the page.
-								$('#discussion').append('<li><strong>' + encodedName
-										+ '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
-								$(".panel-body").scrollTop($('.panel-body')[0].scrollHeight);
+					socket = io.connect();
+					socket.on('connect', function() {
+						$("span#isConnected").removeClass("label-default").addClass("label-success").text("Connected");
+						$("#btnConnect").removeClass("btn-primary").addClass("btn-danger").text("Disconnect");
+						socket.emit('addUser', { user: $('#displayname').val() });
+						$('#sendmessage').on("click", function (event) {
+							socket.emit('sendMessage', { user: $('#displayname').val(), message: $('#message').val() });
+							// Clear text box and reset focus for next comment. 
+							$('#message').val('').focus();
+						});
+						socket.on('newUserAddedMessage', function(data) {
+							
+							$('.alert').text(data.name + ' just signed on.').addClass('in');
+							setTimeout(function () {
+								$('.alert').removeClass('in');
+							}, 3000);
+						});
+						socket.on('userRemovedMessage', function(data) {
+							users.pop(data.name);
+							$('.alert').text(data.name + ' just signed out.').addClass('in');
+							setTimeout(function () {
+								$('.alert').removeClass('in');
+							}, 3000);
+						});
+						socket.on('usersInChat', function(data) {
+							users = data.users;
+							$("#currentUsers").html('Current users logged in: ');
+							$.each(users, function (index, item) {
+								$("#currentUsers").append('<span class="label label-default inline">' + item + '</span>&nbsp;');
 							});
 						});
-						socket.on('disconnect', function() {  });
-					} else {
-						socket.socket.connect(); 
-					}
+						socket.on('chat', function(data) {
+							var encodedName = $('<div />').text(data.user).html();
+							var encodedMsg = $('<div />').text(data.message).html();
+							// Add the message to the page.
+							$('#discussion').append('<li><strong>' + encodedName
+									+ '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
+							$(".panel-body").scrollTop($('.panel-body')[0].scrollHeight);
+						});
+					});
+					socket.on('disconnect', function() {  });
                 } else {
 					socket.emit('disconnectUser', { user: $('#displayname').val() });
                     socket.removeAllListeners('newUserAddedMessage');
