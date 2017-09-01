@@ -101,6 +101,13 @@
 							// Clear text box and reset focus for next comment. 
 							$('#message').val('').focus();
 						});
+						$('body').on('keydown', '#message', function (e) {
+							if (e.keyCode == 13) {
+								socket.emit('sendMessage', { user: $('#displayname').val(), message: $('#message').val() });
+								// Clear text box and reset focus for next comment. 
+								$('#message').val('').focus();
+							}
+						});
 						socket.on('newUserAddedMessage', function(data) {
 							
 							$('.alert').text(data.name + ' just signed on.').addClass('in');
